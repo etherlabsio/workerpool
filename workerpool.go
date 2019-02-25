@@ -107,6 +107,13 @@ func (p *WorkerPool) Submit(task func()) {
 	}
 }
 
+func (p *WorkerPool) SubmitDelayed(delay time.Duration,  task func()) {
+	p.Submit(func() {
+		time.Sleep(delay)
+		task()
+	})
+}
+
 // SubmitWait enqueues the given function and waits for it to be executed.
 func (p *WorkerPool) SubmitWait(task func()) {
 	if task == nil {
