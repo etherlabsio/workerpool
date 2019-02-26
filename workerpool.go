@@ -1,7 +1,10 @@
 package workerpool
 
 import (
+	"context"
+	// "fmt"
 	"github.com/gammazero/deque"
+	"log"
 	"sync"
 	"time"
 )
@@ -36,6 +39,8 @@ func New(maxWorkers int) *WorkerPool {
 		stoppedChan:  make(chan struct{}),
 	}
 
+	pool.delay.ctx, pool.delay.cancel = context.WithCancel(context.Background())
+
 	// Start the task dispatcher.
 	go pool.dispatch()
 
@@ -53,6 +58,10 @@ type WorkerPool struct {
 	waitingQueue deque.Deque
 	stopMutex    sync.Mutex
 	stopped      bool
+	delay        struct {
+		ctx    context.Context
+		cancel context.CancelFunc
+	}
 }
 
 // Stop stops the worker pool and waits for only currently running tasks to
@@ -107,11 +116,18 @@ func (p *WorkerPool) Submit(task func()) {
 	}
 }
 
-func (p *WorkerPool) SubmitDelayed(delay time.Duration,  task func()) {
-	p.Submit(func() {
-		time.Sleep(delay)
-		task()
-	})
+func (p *WorkerPool) SubmitDelayed(delay time.Duration, task func()) {
+	delayedTask := func() {
+		log.Println("entered delayed task")
+		select {
+		case <-p.delay.ctx.Done():
+			task()
+		case <-time.After(delay):
+			log.Println("executing delayed task")
+			task()
+		}
+	}
+	p.Submit(delayedTask)
 }
 
 // SubmitWait enqueues the given function and waits for it to be executed.
@@ -123,6 +139,7 @@ func (p *WorkerPool) SubmitWait(task func()) {
 	p.taskQueue <- func() {
 		task()
 		close(doneChan)
+
 	}
 	<-doneChan
 }
@@ -270,6 +287,7 @@ func (p *WorkerPool) stop(wait bool) {
 	}
 	p.stopped = true
 	if wait {
+		p.delay.cancel()
 		p.taskQueue <- nil
 	}
 	// Close task queue and wait for currently running tasks to finish.

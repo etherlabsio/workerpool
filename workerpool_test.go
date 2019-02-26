@@ -268,8 +268,46 @@ func TestStopWait(t *testing.T) {
 		t.Error("should have zero workers after stopwait")
 	}
 
-	// Check that calling StopWait() againg is OK.
+	// Check that calling StopWait() again is OK.
 	wp.StopWait()
+}
+
+func TestSubmitDelayed(t *testing.T) {
+	wp := New(1)
+	defer wp.Stop()
+
+	// Check that these are noop.
+	wp.Submit(nil)
+	wp.SubmitWait(nil)
+
+	done1 := make(chan struct{})
+	t1 := time.Now()
+	delay1 := 3 * time.Second
+	wp.SubmitDelayed(delay1, func() {
+		time.Sleep(100 * time.Millisecond)
+		close(done1)
+	})
+
+	<-done1
+
+	if time.Since(t1) < delay1 {
+		t.Fatal("SubmitDelayed did not delay the execution")
+	}
+
+	done2 := make(chan struct{})
+	t2 := time.Now()
+	delay2 := 5 * time.Second
+	wp.SubmitDelayed(delay2, func() {
+		close(done2)
+	})
+
+	wp.StopWait()
+
+	<-done2
+
+	if time.Since(t2) >= delay2 {
+		t.Fatal("SubmitDelayed delayed execution even on StopWait()")
+	}
 }
 
 func TestSubmitWait(t *testing.T) {
