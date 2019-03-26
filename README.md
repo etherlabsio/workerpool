@@ -3,6 +3,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/etherlabsio/workerpool)](https://goreportcard.com/report/github.com/etherlabsio/workerpool)
 [![codecov](https://codecov.io/gh/etherlabsio/workerpool/branch/master/graph/badge.svg)](https://codecov.io/gh/etherlabsio/workerpool)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/etherlabsio/workerpool/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fetherlabsio%2Fworkerpool.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fetherlabsio%2Fworkerpool?ref=badge_shield)
 
 Concurrency limiting goroutine pool. Limits the concurrency of task execution, not the number of tasks queued. Never blocks submitting tasks, no matter how many tasks are queued.
 
@@ -42,3 +43,7 @@ func main() {
 	wp.StopWait()
 }
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fetherlabsio%2Fworkerpool.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fetherlabsio%2Fworkerpool?ref=badge_large)
