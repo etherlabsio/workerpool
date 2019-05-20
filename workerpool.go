@@ -111,6 +111,10 @@ func (p *WorkerPool) Stopped() bool {
 // workers.  Since the time to start new goroutines is not significant, there
 // is no need to retain idle workers.
 func (p *WorkerPool) Submit(task func()) {
+	if p.Stopped() {
+		return
+	}
+
 	if task != nil {
 		p.taskQueue <- task
 	}
