@@ -43,6 +43,9 @@ func main() {
 }
 ```
 
+## Real world examples
+
+The list of open source projects using worker pool can be found [here](https://github.com/gammazero/workerpool/wiki#open-projects-using-workerpool)
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fetherlabsio%2Fworkerpool.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fetherlabsio%2Fworkerpool?ref=badge_large)
